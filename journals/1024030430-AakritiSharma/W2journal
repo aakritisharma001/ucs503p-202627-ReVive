@@ -1,28 +1,27 @@
 Project Journal — Aakriti Sharma
 Project: ReVive — Financial Anomaly Detection (UCS503 Semester Project)
-Role: System Diagrams (UML)
+Role: Explainability & Baseline Methodology
 
 Week 2
-Focus: Building the Use Case Diagram and Activity Diagram
+Focus: Prototyping the classical Isolation Forest + LOF + COPOD ensemble baseline
 
 Summary
-With the actors, use cases, and rough pipeline order settled, this week was about actually producing the first two diagrams — the Use Case Diagram (showing the system from a user-interaction perspective) and the Activity Diagram (showing the step-by-step flow of the core detection process).
+This week built out the classical ensemble that would serve as our comparison baseline against the detection engine — three well-established, no-training-required anomaly detection methods combined into a single ensemble score.
 
 What I did
-●	Built the full Use Case Diagram, showing both actors (User/Analyst, Admin) connected to all six identified use cases (upload data, run detection, view alerts, view explanation, export report, configure thresholds), with appropriate associations between actors and their relevant use cases.
-●	Built the Activity Diagram for the core 'detect anomaly' process: starting at data upload, through preprocessing/windowing, through the model scoring step, into a decision branch (is the score above the anomaly threshold?), splitting into two paths — 'log as normal, continue' versus 'generate explanation, flag as anomaly, alert, store in database.'
-●	Cross-checked both diagrams directly against the pipeline steps being implemented by the model/technical track that same week, to make sure the diagrams reflected the real system rather than an idealized or outdated version of it.
-●	Made a small revision to the Activity Diagram's decision branch after confirming with the model track exactly where the threshold-based triage logic sits in the actual pipeline.
+●	Implemented Isolation Forest, Local Outlier Factor (LOF), and COPOD as three independent anomaly detectors, each run on the same windowed fraud data format used by the detection engine track.
+●	Built a first version of the ensemble that combined all three methods' anomaly scores into a single combined score, to serve as a stronger, fairer baseline than any single classical method alone.
+●	Ran the ensemble on a subset of the fraud dataset to confirm all three methods executed correctly and produced sensible individual outputs before combining them.
+●	Did an initial combined-score run and got a first ensemble result — usable as a starting comparison point, though flagged for review since the combination logic hadn't been closely scrutinized yet.
 
 Technical details / observations
-●	The decision branch in the Activity Diagram was deliberately modeled as a genuine fork (not just a straight line) to make the diagram useful for explaining the triage logic (Normal / Review Needed / High Risk) later in the documentation and PPT.
-●	Kept both diagrams in standard UML notation (proper actor stick-figures and use-case ovals for the Use Case Diagram; proper start/end nodes and decision diamonds for the Activity Diagram) rather than informal flowcharts, since the course expects standard UML.
+●	Chose these three specific classical methods because they represent meaningfully different detection philosophies (isolation-based, density-based, and copula/statistical-based) — a more informative comparison than three variants of a similar idea.
 
 Issues / blockers
-●	None blocking this week — cross-checking with the model track early avoided any diagram rework this time.
+●	The initial score combination was a simple average of the three methods' raw outputs — flagged as something to scrutinize further, since the three methods don't naturally produce scores on the same scale.
 
 Learnings
-●	Checking in with the team building the actual pipeline before finalizing a diagram, rather than after, avoided a revision cycle and kept the diagram accurate to the real system from the start.
+●	Combining scores from methods with fundamentally different underlying score distributions needs more care than a naive average — this became the focus of the following week's work.
 
-Time spent (approx.): ~6 hours (drawing and refining both diagrams, cross-checking with the model track, one revision pass).
-Plan for next week: Build the Class Diagram once the system's core software components/classes are more clearly settled by the technical track.
+Time spent (approx.): ~8 hours (implementing three classical detectors, initial ensemble combination, first test run).
+Plan for next week: Scrutinize the ensemble's score-combination logic more carefully — this was flagged as a risk area at the end of this week.
