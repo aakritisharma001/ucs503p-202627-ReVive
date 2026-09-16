@@ -1,28 +1,28 @@
 Project Journal — Aakriti Sharma
 Project: ReVive — Financial Anomaly Detection (UCS503 Semester Project)
-Role: System Diagrams (UML)
+Role: Explainability & Baseline Methodology
 
 Week 3
-Focus: Building the Class Diagram
+Focus: Catching and fixing a real methodology flaw: naive score averaging
 
 Summary
-This week focused on the Class Diagram — translating the system's architecture into a proper object-oriented structure showing the core classes and how they relate to and depend on each other, which is generally the most detail-dense of the five diagrams.
+This week's close look at the ensemble's combination logic paid off — found a genuine methodology flaw (naively averaging three differently-scaled anomaly scores) that was skewing the ensemble's results toward whichever method happened to produce the largest raw numbers, and fixed it properly.
 
 What I did
-●	Identified the core system classes needed to represent the full pipeline as software components: DataIngestor, Preprocessor, RepairModel (the ReVive detection engine), ScoringEngine, ExplainabilityModule, TriageClassifier, AlertRecord, and APIController.
-●	Worked out the relationships between these classes — for example, that ScoringEngine consumes RepairModel's output, that TriageClassifier consumes ScoringEngine's output to decide Normal/Review/High-Risk, and that AlertRecord represents the persisted data written whenever TriageClassifier flags something.
-●	Decided on appropriate class-level attributes and methods for each class at a level of detail suitable for a course diagram (not full implementation-level detail) — e.g., RepairModel with a forward()/repair() method, ScoringEngine with a compute_score() method.
-●	Built the full Class Diagram showing all eight classes with their key attributes/methods and the association/dependency arrows between them.
+●	Examined the raw score distributions of Isolation Forest, LOF, and COPOD individually and found they operate on meaningfully different scales and ranges, meaning a simple average implicitly let whichever method had the largest numeric range dominate the combined score.
+●	Confirmed this was a real problem, not a theoretical concern, by checking cases where the naive-averaged ensemble disagreed with what the individually strongest method would have flagged — the averaging was measurably diluting genuine anomaly signal from the better-calibrated methods.
+●	Fixed this by standardizing each method's scores (converting to a common scale, e.g. rank- or z-score-based normalization) before combining them, so each method contributes proportionally rather than being dominated by raw scale differences.
+●	Re-ran the ensemble with the corrected combination logic and confirmed the combined score now behaved sensibly — agreeing more closely with the strongest individual method's flags rather than being pulled off by scale artifacts.
+●	Documented the flaw and the fix clearly, since it's a good, concrete example of methodological rigor to bring up in the documentation and viva.
 
 Technical details / observations
-●	Deliberately kept AlertRecord as a simple data-holding class (attributes only, minimal methods) to reflect that it represents a stored database record rather than active logic — this distinction matters for keeping the diagram an accurate reflection of the system's actual design, not just a list of every class name.
-●	Named the detection engine class RepairModel in the diagram to keep it descriptive of its function, independent of whatever the underlying model implementation is called in code at any given time.
+●	This is a classic and easy-to-miss pitfall in any ensemble that combines heterogeneous anomaly scores — worth catching specifically because it would have quietly under-mined the fairness of the baseline comparison against the detection engine if left in.
 
 Issues / blockers
-●	None blocking — the class list was stable enough by this point in the project (given the model architecture from the technical track had already been implemented the previous week) that no significant rework was needed.
+●	None outstanding after the fix — but this did cost meaningful time to properly diagnose, since the ensemble wasn't crashing or obviously broken, only subtly miscalibrated.
 
 Learnings
-●	A Class Diagram is most useful when each class's role is kept single-purpose and clearly named (e.g., separating ScoringEngine from TriageClassifier rather than merging them) — this makes the diagram easier to explain in a viva and mirrors good software design practice.
+●	Combining scores from different anomaly detection methods always needs an explicit normalization step first — never average raw, differently-scaled scores and assume the result is meaningful.
 
-Time spent (approx.): ~5 hours (identifying classes, working out relationships, drawing the diagram).
-Plan for next week: Build the Data Flow Diagram and Sequence Diagram to complete the full required diagram set.
+Time spent (approx.): ~9 hours (diagnosing the scaling issue, implementing normalization, re-running and verifying the corrected ensemble).
+Plan for next week: Run the corrected ensemble against the detection engine's real results for a full comparison, and begin the model limitations/failure-mode analysis.
