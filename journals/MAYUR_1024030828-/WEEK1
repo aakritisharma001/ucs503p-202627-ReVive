@@ -1,0 +1,25 @@
+
+
+Week 1
+Focus: Repo logistics setup and initial diagram planning
+
+Summary
+This week covered the administrative groundwork for the whole team (repo, folder structure, course conventions) and the early planning for the five required UML diagrams, so both the engineering tracks and the documentation had a clean foundation to build on.
+
+What I did
+●	Forked the course's master repo template, renamed it to follow the course's required naming convention, and set up the shared folder structure (journals, proposal, documentation, diagrams, code) for the whole team to work from.
+●	Enabled GitHub Pages on the fork so the project page auto-publishes, and set up each team member's individual journal folder as required by the course.
+●	Reviewed the course's semester-project page to confirm exactly which diagrams are expected for the prototype evaluation (Use Case, Activity, Class, DFD, Sequence).
+●	Reviewed the team's early requirements discussion to start drafting the actors (User/Analyst, Admin) and use cases (upload data, run detection, view alerts, view explanation, export report, configure thresholds) that the diagrams would be built around.
+
+Technical details / observations
+●	Set the repo up early and deliberately so both other tracks (detection engine, baseline/explainability) had a consistent place to commit code and results from week one, rather than needing to reorganize later.
+
+Issues / blockers
+●	None blocking — this was foundational setup work with no dependency on the other tracks yet.
+
+Learnings
+●	Getting repo structure and conventions right in week one avoided any reorganization overhead later when multiple people started committing code and documents in parallel.
+
+Time spent (approx.): ~5 hours (repo setup, folder structure, course convention compliance, initial actor/use-case drafting).
+Plan for next week: Build the Use Case and Activity diagrams, and continue toward the full five-diagram set.
