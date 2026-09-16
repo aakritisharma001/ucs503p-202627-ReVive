@@ -1,0 +1,28 @@
+Project Journal — Aakriti Sharma
+Project: ReVive — Financial Anomaly Detection (UCS503 Semester Project)
+Role: System Diagrams (UML)
+
+Week 2
+Focus: Building the Use Case Diagram and Activity Diagram
+
+Summary
+With the actors, use cases, and rough pipeline order settled, this week was about actually producing the first two diagrams — the Use Case Diagram (showing the system from a user-interaction perspective) and the Activity Diagram (showing the step-by-step flow of the core detection process).
+
+What I did
+●	Built the full Use Case Diagram, showing both actors (User/Analyst, Admin) connected to all six identified use cases (upload data, run detection, view alerts, view explanation, export report, configure thresholds), with appropriate associations between actors and their relevant use cases.
+●	Built the Activity Diagram for the core 'detect anomaly' process: starting at data upload, through preprocessing/windowing, through the model scoring step, into a decision branch (is the score above the anomaly threshold?), splitting into two paths — 'log as normal, continue' versus 'generate explanation, flag as anomaly, alert, store in database.'
+●	Cross-checked both diagrams directly against the pipeline steps being implemented by the model/technical track that same week, to make sure the diagrams reflected the real system rather than an idealized or outdated version of it.
+●	Made a small revision to the Activity Diagram's decision branch after confirming with the model track exactly where the threshold-based triage logic sits in the actual pipeline.
+
+Technical details / observations
+●	The decision branch in the Activity Diagram was deliberately modeled as a genuine fork (not just a straight line) to make the diagram useful for explaining the triage logic (Normal / Review Needed / High Risk) later in the documentation and PPT.
+●	Kept both diagrams in standard UML notation (proper actor stick-figures and use-case ovals for the Use Case Diagram; proper start/end nodes and decision diamonds for the Activity Diagram) rather than informal flowcharts, since the course expects standard UML.
+
+Issues / blockers
+●	None blocking this week — cross-checking with the model track early avoided any diagram rework this time.
+
+Learnings
+●	Checking in with the team building the actual pipeline before finalizing a diagram, rather than after, avoided a revision cycle and kept the diagram accurate to the real system from the start.
+
+Time spent (approx.): ~6 hours (drawing and refining both diagrams, cross-checking with the model track, one revision pass).
+Plan for next week: Build the Class Diagram once the system's core software components/classes are more clearly settled by the technical track.
