@@ -1,0 +1,29 @@
+Project Journal — Aakriti Sharma
+Project: ReVive — Financial Anomaly Detection (UCS503 Semester Project)
+Role: System Diagrams (UML)
+
+Week 1
+Focus: Reviewing course diagram requirements and planning the system's actors and use cases
+
+Summary
+This week was preparatory — understanding exactly which diagrams the course expects for the prototype evaluation, and working out the system's actors and use cases based on the functional requirements the team had already drafted, so the actual diagram-drawing in later weeks would be based on a solid, agreed structure rather than guesswork.
+
+What I did
+●	Reviewed the course's semester-project page (tiet-ucs503.github.io/semester-project) to confirm the exact set of diagrams expected for Project Evaluation 1 (the prototype milestone): Use Case Diagram, Activity Diagram, Class Diagram, Data Flow Diagram (DFD), and Sequence Diagram.
+●	Reviewed the team's already-drafted functional and non-functional requirements document to identify the system's core actors and their interactions.
+●	Identified two actors for the system: User/Analyst (the primary user who uploads data and reviews flagged anomalies) and Admin (who configures detection thresholds and manages the system).
+●	Drafted an initial list of six use cases based on the functional requirements: upload transaction data, run anomaly detection, view flagged anomalies, view explanation for an anomaly, export alert report, and configure triage thresholds.
+●	Discussed the draft use case list with the team to confirm it matched the pipeline being built by the model/technical track, so the diagrams wouldn't need major rework once that track's architecture solidified further.
+
+Technical details / observations
+●	Kept the use case list deliberately aligned with the functional requirements document already written earlier in the project, rather than inventing new functionality, so the diagrams and the requirements section of the documentation would stay consistent with each other.
+●	Chose to wait on finalizing the Activity Diagram's exact flow until the model track confirmed the pipeline order (upload → preprocess → score → threshold check → alert/log), since drawing it prematurely risked needing a rework.
+
+Issues / blockers
+●	Diagram scope and detail depend on the system architecture, which was still being finalized in parallel by the model/technical track this same week — meant holding off on the Activity and Class diagrams specifically until that stabilized a bit more.
+
+Learnings
+●	Grounding the use case list directly in the already-written functional requirements (rather than drafting it independently) kept the eventual diagrams and the requirements section of the documentation consistent with each other, avoiding a mismatch that would be confusing in a viva.
+
+Time spent (approx.): ~4 hours (reviewing course requirements, reviewing functional requirements doc, drafting actors/use cases, team discussion).
+Plan for next week: Draft the Use Case Diagram and Activity Diagram now that the actor/use-case list and rough pipeline flow are agreed.
