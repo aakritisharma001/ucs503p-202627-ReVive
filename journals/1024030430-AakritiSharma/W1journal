@@ -1,29 +1,27 @@
 Project Journal — Aakriti Sharma
 Project: ReVive — Financial Anomaly Detection (UCS503 Semester Project)
-Role: System Diagrams (UML)
+Role: Explainability & Baseline Methodology
 
 Week 1
-Focus: Reviewing course diagram requirements and planning the system's actors and use cases
+Focus: Working through the course's 'engine availability' constraint and what it means for our approach
 
 Summary
-This week was preparatory — understanding exactly which diagrams the course expects for the prototype evaluation, and working out the system's actors and use cases based on the functional requirements the team had already drafted, so the actual diagram-drawing in later weeks would be based on a solid, agreed structure rather than guesswork.
+This week was about resolving a real tension: the course explicitly disallows open-ended research and requires an already-available engine, but our chosen base method (the JuRe paper) had no released code. Worked through what would and wouldn't be defensible under the course's rules before the team committed further time to the reimplementation.
 
 What I did
-●	Reviewed the course's semester-project page (tiet-ucs503.github.io/semester-project) to confirm the exact set of diagrams expected for Project Evaluation 1 (the prototype milestone): Use Case Diagram, Activity Diagram, Class Diagram, Data Flow Diagram (DFD), and Sequence Diagram.
-●	Reviewed the team's already-drafted functional and non-functional requirements document to identify the system's core actors and their interactions.
-●	Identified two actors for the system: User/Analyst (the primary user who uploads data and reviews flagged anomalies) and Admin (who configures detection thresholds and manages the system).
-●	Drafted an initial list of six use cases based on the functional requirements: upload transaction data, run anomaly detection, view flagged anomalies, view explanation for an anomaly, export alert report, and configure triage thresholds.
-●	Discussed the draft use case list with the team to confirm it matched the pipeline being built by the model/technical track, so the diagrams wouldn't need major rework once that track's architecture solidified further.
+●	Reviewed the course's semester-project page and its stated philosophy in detail — specifically the 'no research delays' rule and the requirement for a 'mature engine' already available for the core solution.
+●	Discussed with the team whether reimplementing a fully-specified paper (architecture, training recipe, and scoring formula all given, just no code) counts as 'engine availability' under this rule, versus counting as disallowed research.
+●	Concluded that since every design decision was already made by the original authors and nothing being done was novel algorithm research, the reimplementation is defensible as 'integrating an available (if not pre-coded) engine' — the position to take if this comes up with the professor.
+●	Started scoping a fallback/complementary angle: a classical, no-training-required ensemble (Isolation Forest, LOF, COPOD) that could stand on its own as an unambiguously 'available' engine if needed, and would also double as a rigorous baseline either way.
 
 Technical details / observations
-●	Kept the use case list deliberately aligned with the functional requirements document already written earlier in the project, rather than inventing new functionality, so the diagrams and the requirements section of the documentation would stay consistent with each other.
-●	Chose to wait on finalizing the Activity Diagram's exact flow until the model track confirmed the pipeline order (upload → preprocess → score → threshold check → alert/log), since drawing it prematurely risked needing a rework.
+●	This framing question mattered enough to resolve early, since it affects how the whole project — not just one section of the report — should be described to the professor.
 
 Issues / blockers
-●	Diagram scope and detail depend on the system architecture, which was still being finalized in parallel by the model/technical track this same week — meant holding off on the Activity and Class diagrams specifically until that stabilized a bit more.
+●	No official ruling from the professor on this specific framing yet — proceeding on the team's best-judgment interpretation, with a documented rationale ready in case it's questioned.
 
 Learnings
-●	Grounding the use case list directly in the already-written functional requirements (rather than drafting it independently) kept the eventual diagrams and the requirements section of the documentation consistent with each other, avoiding a mismatch that would be confusing in a viva.
+●	Course-level constraints (like 'no research delays') need to be actively interpreted and applied to a specific technical choice, not just read once and assumed to be fine — worth resolving explicitly rather than leaving it ambiguous.
 
-Time spent (approx.): ~4 hours (reviewing course requirements, reviewing functional requirements doc, drafting actors/use cases, team discussion).
-Plan for next week: Draft the Use Case Diagram and Activity Diagram now that the actor/use-case list and rough pipeline flow are agreed.
+Time spent (approx.): ~5 hours (reading course materials, team discussion, framing writeup, initial baseline scoping).
+Plan for next week: Prototype the classical ensemble baseline (Isolation Forest, LOF, COPOD) to have as both a course-safe fallback and a rigorous comparison point.
