@@ -1,0 +1,17 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=25mm]{geometry}
+\usepackage[hidelinks]{hyperref}
+\title{ReVive\\\large UCS503P Prototype Stage Progress Report}
+\author{Aakriti Sharma (1024030430) \and Koena (1024030831) \and Mayur Goyal (1024030828)}
+\date{Thapar Institute of Engineering and Technology\\Reconstructed from the submitted prototype presentation}
+\begin{document}
+\maketitle
+\section{Prototype scope}
+The prototype tests whether an independently implemented corrupt-and-repair network can support a financial transaction review workflow. The Streamlit application loads synthetic or uploaded data, trains the repair model, compares it to two classical detectors, and presents an anomaly timeline.
+\section{Implemented workflow}
+The model repairs intentionally corrupted normal windows during training. Structural discrepancies between observed and repaired windows determine inference scores. Flagged windows receive a triage tier and a feature-error explanation. The dashboard records alerts in SQLite. The accompanying prototype presentation and original documentation record the design diagrams and exploratory demonstration.
+\section{Evaluation and limitations}
+Prototype benchmark figures are exploratory and depend on the selected data slice, preprocessing, and window definitions. Thresholds initially use manually selected scores. Repair-error contribution is especially useful for identifying which input dimensions differed during reconstruction, although the credit-card data uses anonymized features.
+\section{Plan for the final stage}
+Separate chronological partitions before preprocessing and windowing. Fit scaling on normal training rows. Fix the seed, evaluate thresholds on a held-out partition, verify durable local alert history, and publish the working dashboard and project documentation. See the final report for the revised experiment.
+\end{document}
