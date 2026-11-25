@@ -15,6 +15,20 @@ ReVive prioritizes suspicious windows of financial transactions and exposes repa
 \section{Problem and scope}
 A reviewer needs a ranked workload and evidence for investigating an alert. ReVive implements batch ingestion, anomaly scoring, triage, explanations, and alert persistence. The deployed dashboard accepts a public transaction CSV or generates synthetic demo data. A labeled test window is positive if it contains at least one labeled fraud transaction. The interface reports window-level results and is an academic decision-support prototype.
 
+\section{Objective status and scope changes}
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+Goal & Delivery evidence & Status\\
+\midrule
+Interactive review & CSV and synthetic input, chart, triage table, feature drill-down & Met for the academic batch workflow.\\
+Comparable ranking & Three detectors scored on the same 631 labeled windows & Met on the defined chronological subset.\\
+Quantify reviewer load & Fixed and calibrated policies applied to the same scores & Met. The calibrated review queue is still large.\\
+Validate and publish & Fresh-session persistence check, Streamlit deployment, course project site & Met for the classroom demonstration. Hosted storage remains instance-local.\\
+\bottomrule
+\end{tabularx}
+
+The prototype roadmap considered a separate API, a corrected ensemble, and broader evaluation. The delivered application uses an in-process Streamlit integration and compares two individual classical baselines. These choices kept the final engineering effort focused on data isolation, threshold calibration, and verifying the reviewer workflow. Broader generalization and deployment load remain open evaluation questions.
+
 \section{Requirements and design}
 \begin{itemize}
 \item Accept numeric transaction features and an optional binary label. Reject invalid feature values with a visible message.
@@ -32,6 +46,26 @@ The dashboard calls the data preparation, PyTorch model, scoring, baseline, expl
 The model independently implements the repair approach in JuRe \cite{jure}: a compact depthwise-separable residual block learns to repair Gaussian noise and channel masking. Inference uses amplitude, first-difference, trend, and correlation discrepancies. Scores are standardized using the normal training reference. The 95th and 99th percentiles of normal validation scores define the default Review Needed and High Risk cutoffs. That validation partition also supports early stopping.
 
 Each alert shows triage, an anomaly score, and the features with the largest absolute repair error. This attribution describes repair discrepancy. The SQLite table records window index, score, tier, top feature, contribution, and timestamp.
+
+\subsection{Module responsibilities}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Location under \texttt{code/} & Responsibility\\
+\midrule
+\texttt{app.py} & Owns upload controls, prepares a run, calls the pipeline, displays rankings and threshold comparisons, and writes the alert history.\\
+\texttt{data/prepare\_data.py} & Validates inputs, fits the scaler on normal training rows, and extracts windows without joining rows across known anomalous windows.\\
+\texttt{model/repairnet.py} and \texttt{train.py} & Define and train the residual repair network. Validation loss supports early stopping.\\
+\texttt{model/scoring.py} & Computes structural discrepancies and standardizes them using the training reference.\\
+\texttt{model/explainability.py} and \texttt{triage.py} & Summarize feature repair error and map scores to review tiers.\\
+\texttt{baselines/baselines.py} & Fits Isolation Forest and LOF and provides comparison metrics.\\
+\bottomrule
+\end{tabularx}
+
+\subsection{Integration path}
+When a reviewer requests a run, the dashboard selects numeric features and constructs chronologically isolated partitions. The repair model returns reconstructed arrays with the same time and feature shape as the input. The scoring module converts each pair into one value, and the triage stage applies the configured policy. The dashboard displays the same held-out scores in a timeline and sends flagged-window summaries to SQLite. In a labeled run, ranking metrics use the test targets and threshold metrics use the test flags and targets together.
+
+\subsection{Project history}
+The first increment implemented the detector and a prototype dashboard. The second increment corrected scaling and window construction at the partition boundaries, then controlled the random seed so the team could reproduce the comparison. In the final increment, the app exposed calibrated thresholds and SQLite history. Deployment initially hit a Python-wheel compatibility issue in Streamlit Cloud. Aligning the CPU PyTorch wheel and pandas package resolution with the hosted Python version restored the deployed application. GitHub Actions publishes documentation independently of the application runtime.
 
 \section{Held-out evaluation}
 We used the first 8,000 rows of the ULB credit-card dataset \cite{ulb}. The chronological row split was 4,320 training, 480 validation, and 3,200 test rows. Window length was 50 and stride was 5. Hidden width was 64, seed was 42, and training stopped at six of ten allowed epochs. There were 835 normal training windows, 87 normal validation windows, and 631 test windows. Of the test windows, 135 were positive. Isolation Forest and LOF were fitted on flattened training windows and evaluated on the same test windows. LOF caps its reference pool at 3,000 windows.
@@ -60,6 +94,15 @@ Calibrated (4.7970 / 5.0895) & 338 & 53.57\% & 39.94\% & 100\%\\
 
 Both policies used the same test scores. Calibration removed 288 alerts and retained all 135 positive windows in this run. Average precision describes ranking quality while precision and recall in the second table describe the selected review cutoff.
 
+\subsection{Interpreting the result}
+The holdout contains 135 positive and 496 negative windows. Under the default policy, 491 negative windows were flagged. Calibration reduced that count to 203. The 288 fewer flagged windows represent a 46.0\% reduction relative to the default queue. The resulting alert rate and precision show that many flagged windows still lack a known fraud label. The recall result applies to positive windows, which overlap, and cannot be read as a count of distinct fraud incidents.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{dashboard-results.png}
+\caption{Recorded real-data run showing the held-out comparison and both threshold policies.}
+\end{figure}
+
 \section{Verification}
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}lXX@{}}
@@ -78,9 +121,18 @@ Seeded repeat & Match the displayed tables & Both tables matched at displayed pr
 See the repository's \texttt{code/VERIFICATION.md} for dependency versions and input checksum.
 
 \section{Deployment and limitations}
-The application is available at \url{https://revive2627.streamlit.app/}. The repository and project documentation are linked from the course fork. Use synthetic demo data or a public CSV during evaluation. The hosted SQLite file is shared inside the running instance and may reset after redeployment. This delivery has a single Streamlit process that runs training and scoring.
+The application is available at \url{https://revive2627.streamlit.app/}. The source and reports are in the \href{https://github.com/aakritisharma001/ucs503p-202627-ReVive}{course fork}. The \href{https://aakritisharma001.github.io/ucs503p-202627-ReVive/}{project website} links to the live demo. Use synthetic demo data or a public CSV during evaluation. The hosted SQLite file is shared inside the running instance and may reset after redeployment. This delivery has a single Streamlit process that runs training and scoring.
 
 The experiment covers one chronological subset, and overlapping windows share observations. Adjacent transactions may belong to different cardholders. The anonymized PCA features constrain business interpretation, and a 53.57\% flag rate remains considerable. Future evaluation can use more chronological holdouts, separate calibration data, and threshold selection based on an explicit review budget.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{dashboard-explanation.png}
+\caption{Flagged-window drill-down from the recorded Streamlit run. The view shows quantified feature contributions and the peak repair-error timestep.}
+\end{figure}
+
+\section{Conclusion and future work}
+ReVive delivered an inspectable workflow from public transaction data to scored windows, explanations, and saved alert metadata. Separating training and evaluation made the benchmark more defensible. Comparing thresholds on identical scores quantified a practical improvement in review workload while revealing how many alerts remained. The verification record contains functional checks and the held-out benchmark. It does not establish formal user acceptance by financial analysts, service latency, load capacity, or production uptime. A follow-on study should measure these separately and evaluate additional chronological segments before selecting thresholds for operational use.
 
 \begin{thebibliography}{9}
 \bibitem{jure} K.-K. Ozer, R. Ebeling, and M. Enzweiler. \emph{Back to Repair: A Minimal Denoising Network for Time Series Anomaly Detection}. arXiv:2604.17388, 2026. \url{https://arxiv.org/abs/2604.17388}

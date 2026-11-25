@@ -1,19 +1,95 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=25mm]{geometry}
+\usepackage{booktabs,tabularx}
 \usepackage[hidelinks]{hyperref}
-\title{ReVive\\\large UCS503P Project Proposal}
+\title{ReVive: Explainable Financial Anomaly Detection Using a Corrupt-and-Repair Network\\\large UCS503P Project Proposal}
 \author{Aakriti Sharma (1024030430) \and Koena (1024030831) \and Mayur Goyal (1024030828)}
 \date{Thapar Institute of Engineering and Technology}
 \begin{document}
 \maketitle
-\section{Problem}
-Financial transaction streams are imbalanced and produce an investigation workload. A reviewer needs suspicious transaction windows ranked and enough information to decide where to inspect.
-\section{Proposed system}
-ReVive adapts the JuRe corrupt-and-repair approach to the ULB credit-card dataset. The proposed dashboard ingests transaction data, scores chronological windows, explains prominent feature discrepancies, displays triage tiers, and stores alerts locally. The model is trained on normal examples.
-\section{Evaluation plan}
-Compare the detector with Isolation Forest and Local Outlier Factor on a common chronological test partition. Report average precision and ROC-AUC, and exercise the dashboard with valid and invalid inputs. Track both ranking quality and the volume of alerts created at the chosen cutoffs.
-\section{Planned milestones}
-The prototype demonstrates ingestion, scoring, explanations, and SQLite alert history. The final stage addresses preprocessing isolation, repeatability, threshold calibration, and hosted access. The course repository retains design notes, journals, reports, and source code.
-\section{Risks}
-Anonymized features limit semantic explanations. Overlapping windows and changes in fraud prevalence affect evaluation. CPU costs can limit interactive training on large files.
+
+\section{Higher-order goal}
+ReVive will help a reviewer decide which groups of financial transactions deserve attention and provide a starting point for investigation. The proposed deliverable is a browser-based decision-support prototype that turns a batch of numerical records into a ranked set of reviewable alerts.
+
+\section{Time-to-value}
+The first usable increment will accept synthetic transaction data, score a batch, and show an anomaly timeline. The next increment will add real-data ingestion, explanations, and alert history. This order lets the team exercise the input-to-output path early, isolates data problems from user-interface problems, and gives evaluators a demonstration that can run without an external dataset.
+
+\section{Problem statement}
+Anomaly detection is a ranking problem and an operational review problem. Fraud examples are rare, and some legitimate transactions also look unusual. A detector that assigns high scores to most of the data may capture suspicious activity while overwhelming the reviewer. Accuracy alone is a poor measure in this setting because a system that predicts the majority class can score well while providing little investigative value.
+
+Transaction records arrive over time. Scoring consecutive groups gives the application a way to examine changes near an unusual observation. However, adjacent records in a public dataset may belong to different people, and many input features are anonymized. ReVive will make those constraints explicit in its displays and evaluation. It will prioritize a window for human review and identify the feature dimensions and positions whose observed values differ most from the repair model's output.
+
+The project will address the gap between a detector's numerical output and a reviewer action. It will expose both ranking metrics and threshold-dependent workload on a common holdout. The same dashboard will connect a score to a tier, a feature explanation, and an alert history entry.
+
+\section{Proposed solution}
+\subsection{Objectives and scope}
+\renewcommand{\labelitemi}{\(\bullet\)}
+\begin{itemize}
+\item By the prototype review, demonstrate CSV or synthetic input through to ranked and explained windows.
+\item By final evaluation, compare the repair detector with Isolation Forest and Local Outlier Factor on identical held-out windows and record the configuration.
+\item Compare a fixed alert policy and a validation-derived policy on the same scores. Measure flagged count, precision, and recall for both policies.
+\item Demonstrate valid and invalid input handling, one explanation drill-down, and alert retrieval after reopening the application.
+\item Publish the application and link its source, documentation, and user instructions from the course repository.
+\end{itemize}
+
+\subsection{Core workflow and operational constraints}
+The evaluator chooses synthetic data or uploads a public CSV, selects window and model settings, and starts scoring. The dashboard presents the ranked windows, tier, benchmark when labels permit it, and an alert explanation. A capped sample will be used for lab demonstrations to keep CPU computation manageable. Raw financial records should come from a public dataset. Automated account actions and persistent institutional transaction storage fall outside this course prototype.
+
+\section{Solution approach}
+\subsection{Data preparation and scoring}
+Use Python, NumPy, pandas, and PyTorch to implement a chronological batch experiment. Start with the ULB credit-card dataset and retain a synthetic generator for walkthroughs. Treat time as an ordering field. Exclude the label from model features and use it when available to select known-normal training windows and evaluate the test set. Form windows within each partition, fit scaling on normal training observations, and apply the same transformation to validation and test data.
+
+Adapt the JuRe corrupt-and-repair method by training a small residual network to reconstruct clean normal windows from corrupted copies. A structural score will compare observed and repaired values, trends, differences, and inter-feature correlations. Explain a flagged result by summarizing absolute feature repair errors and identifying the point of largest error within the window. The feature labels remain anonymized, so the display will describe numerical discrepancies.
+
+\subsection{Web architecture and delivery}
+Streamlit will coordinate the workflow, expose model settings, and render the results. Keep preprocessing, repair, structural scoring, baselines, and triage in separate Python modules so they can be inspected and tested independently of the dashboard. SQLite will persist compact alert metadata. GitHub will track deliverables and build the project documentation. The hosted demonstration will be checked from a public browser session after deployment.
+
+\section{Evaluation criterion}
+\subsection{Primary evaluation metric}
+Use window-level average precision to compare rankings. A labeled test window is positive when it contains at least one labeled fraud transaction. Use identical test windows for all detectors and keep the split, random seed, width, window length, and stride in the verification record.
+
+\subsection{Secondary evaluation metrics and pilot plan}
+Report ROC-AUC and the count, precision, and recall of alerts at each policy. The initial acceptance goal is to reduce the flagged count relative to fixed cutoffs and quantify any resulting change in recall. For a team walkthrough, exercise a valid CSV, a nonnumeric feature value, the explanation selector, and persistence after reopening SQLite on the same instance. Capture tables or screenshots for the final report. Formal acceptance testing by bank staff is outside the planned course study.
+
+\section{Scalability}
+Window length and stride control the amount of overlapping input sent to scoring. Start with bounded CSV slices and batch inference to limit CPU and memory use. Interface, scoring, and storage boundaries make it possible to introduce background jobs or persistent managed storage later. The initial deployment targets interactive academic testing with SQLite and a single hosted application instance.
+
+\section{Engine availability heuristic}
+Use PyTorch for tensor operations and model training, scikit-learn for the classical baselines and metrics, Streamlit for browser interaction, and SQLite for alert storage. The paper supplies the detector design, and the team will implement its repair and scoring workflow in Python. Off-the-shelf libraries cover the standard infrastructure so the engineering work can focus on reproducible evaluation and review.
+
+\section{Project scope and deliverables}
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Course phase & Planned evidence\\
+\midrule
+Weeks 1--4 & Method review, team roles, data source, requirements, and proposal.\\
+Weeks 5--7 & Repair engine, baseline comparison, first Streamlit walkthrough, and prototype report.\\
+Weeks 8--12 & Refine design and evaluation, isolate data splits, and define alert-policy checks.\\
+Week 13 & Schedule buffer for data, evaluation, or deployment issues.\\
+Weeks 14--16 & Validate the revised workflow, capture evidence, and prepare hosting and documentation.\\
+Week 17 & Final prototype demonstration, presentation, and report.\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Resources and budget}
+Koena will focus on the detector and training pipeline. Aakriti will focus on explainability and baseline methodology. Mayur will focus on the dashboard, diagrams, and documentation. The team will use development laptops or lab machines with CPU-based Python, the public ULB dataset, and the GitHub course fork. A hosted demonstration can use a free academic-scale hosting option. No additional hardware, private dataset purchase, or paid service is budgeted for this scope.
+
+\section{Risks and mitigations}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Risk & Planned response\\
+\midrule
+Data leakage & Split by time before scaling or forming windows. Preserve the evaluation partition.\\
+Alert overload & Report actual review counts and calibrate cutoffs on validation data.\\
+Feature ambiguity & Explain repair contributions and show the limits of PCA feature interpretation.\\
+Slow or failed runs & Offer synthetic input and cap the size of the interactive example.\\
+Shared hosting storage & Demonstrate persistence on the same instance and document its life cycle.\\
+\bottomrule
+\end{tabularx}
+
+\section{Summary}
+The proposed course outcome is a deployable, measurable workflow for anomaly review. Success will be demonstrated by an end-to-end walkthrough, comparable held-out results, and explicit accounting of alert workload.
+
 \end{document}
