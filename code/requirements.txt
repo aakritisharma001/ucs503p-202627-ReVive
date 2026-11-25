@@ -1,5 +1,6 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 streamlit==1.67.0
-torch @ https://download-r2.pytorch.org/whl/cpu/torch-2.15.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+torch==2.15.0+cpu
 scikit-learn==1.8.0
-pandas==2.2.3
+pandas==2.3.3
 numpy==2.3.5
