@@ -35,6 +35,8 @@ Among the same 631 test windows, validation calibration cut the flagged count fr
 
 ## Project material
 
+- [System design diagrams](system-design.md)
+
 - [Project proposal (PDF)](https://github.com/aakritisharma001/ucs503p-202627-ReVive/blob/master/project-proposal/main.pdf)
 - [Prototype report (PDF)](https://github.com/aakritisharma001/ucs503p-202627-ReVive/blob/master/project-report-prototype-stage/main.pdf)
 - [Final seminar (PDF)](https://github.com/aakritisharma001/ucs503p-202627-ReVive/blob/master/project-report-final/seminar.pdf)

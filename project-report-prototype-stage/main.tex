@@ -34,7 +34,7 @@ The dashboard accepts synthetic input or a CSV and provides a training and scori
 The prototype separates responsibilities into data preparation, the repair model and training loop, structural scoring, baseline evaluation, feature explanations, triage, and the Streamlit application. Classical detectors provide a comparison on the evaluated samples. SQLite records alerts so the reviewer can revisit the recent scoring history. Feature contribution and peak timestep provide a bridge from an aggregate score to the particular window needing review.
 
 \subsection{Design artifacts}
-The \href{https://github.com/aakritisharma001/ucs503p-202627-ReVive/blob/master/project-report-prototype-stage/ReVive-prototype.pdf}{original prototype presentation} provides the stage design figures. The following mapping identifies what each artifact clarifies.
+The \href{https://github.com/aakritisharma001/ucs503p-202627-ReVive/blob/master/project-report-prototype-stage/ReVive-prototype.pdf}{prototype presentation} provides the design figures and prototype evidence. The following mapping identifies what each artifact clarifies.
 
 \noindent\begin{tabularx}{\linewidth}{@{}lX@{}}
 \toprule
@@ -42,9 +42,9 @@ Figure & Question addressed\\
 \midrule
 Use case (page 6) & How a reviewer starts scoring and inspects the flagged results.\\
 Activity (page 7) & Where validation, scoring, triage decisions, and explanations occur.\\
-Class (page 8) & Which modules own interface, inference, explanation, triage, and storage responsibilities.\\
-Data flow (page 9) & How transaction input becomes scores, explanation output, and persisted alert metadata.\\
-Sequence (page 10) & The order of interactions in the proposed scoring and review flow. Its API boundary represents a design direction considered at that stage.\\
+Class (page 8) & How the deployed repair model, residual block, and training dataset relate.\\
+Level 0 and Level 1 data flow (page 9) & How transaction input becomes scores, explanation output, and persisted alert metadata.\\
+Sequence (page 10) & The order of interactions in a successful Streamlit scoring run, from Python scoring to SQLite alert storage.\\
 \bottomrule
 \end{tabularx}
 
@@ -78,4 +78,29 @@ The dashboard may stall on large data or dense windowing. Bounded examples and b
 \section{Conclusion}
 The prototype delivered a working review path and exposed weaknesses in evaluation and deployment that could be addressed independently of the core model. The final iteration prioritizes methodological correctness, repeatable evidence, and an accessible demonstration.
 
+\appendix
+\clearpage
+\section{Class diagram}
+\begin{center}
+\includegraphics[width=\linewidth,height=0.74\textheight,keepaspectratio]{../docs/images/class-diagram.png}
+\end{center}
+Model, residual block, and dataset relationships.
+\clearpage
+\section{Level 0 data flow diagram}
+\begin{center}
+\includegraphics[width=\linewidth,height=0.74\textheight,keepaspectratio]{../docs/images/dfd-level-0.png}
+\end{center}
+Data exchanged between the Reviewer and ReVive.
+\clearpage
+\section{Level 1 data flow diagram}
+\begin{center}
+\includegraphics[width=\linewidth,height=0.74\textheight,keepaspectratio]{../docs/images/dfd-level-1.png}
+\end{center}
+Internal processing, data flows, and alert history.
+\clearpage
+\section{Sequence diagram}
+\begin{center}
+\includegraphics[width=\linewidth,height=0.74\textheight,keepaspectratio]{../docs/images/sequence-diagram.png}
+\end{center}
+A successful scoring run with flagged windows.
 \end{document}
