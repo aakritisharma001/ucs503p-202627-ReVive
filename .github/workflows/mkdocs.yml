@@ -30,7 +30,7 @@ jobs:
           mkdocs-git-revision-date-localized-plugin
           mkdocs-git-authors-plugin "mkdocstrings[python]"
       - run: python -m mkdocs build
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: site
       - uses: actions/deploy-pages@v4
